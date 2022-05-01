@@ -1,24 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using PlatformService.Data;
-using PlatformService.SyncDataServices.Http;
 
-namespace PlatformService
+namespace CommandsService
 {
     public class Startup
     {
@@ -32,23 +26,11 @@ namespace PlatformService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<AppDbContext>(opt => 
-            {
-                opt.UseInMemoryDatabase("InMem");
-            });
-            services.AddScoped<IPlatformRepo, PlatformRepo>();
-            
+
             services.AddControllers();
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>().ConfigurePrimaryHttpMessageHandler(sp => new HttpClientHandler
-            {
-                AllowAutoRedirect = false,
-                ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true,
-                SslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12
-            });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PlatformService", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CommandsService", Version = "v1" });
             });
         }
 
@@ -59,10 +41,10 @@ namespace PlatformService
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PlatformService v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CommandsService v1"));
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -72,8 +54,6 @@ namespace PlatformService
             {
                 endpoints.MapControllers();
             });
-
-             PrepDb.PrepPopulation(app);
         }
     }
 }
