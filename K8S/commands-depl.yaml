@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: commandservice
-          image: zmmohib/commandservice:latest
+          image: zmmohib/commandsservice:latest
 ---
 apiVersion: v1
 kind: Service
